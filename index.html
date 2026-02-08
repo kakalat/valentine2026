@@ -49,9 +49,11 @@
 
     .photo img{
       width:100%;
+      max-height:65vh;   /* 👈 limits image height */
+      object-fit:contain;
       display:block;
-      object-fit:cover;
     }
+
 
     .caption{
       position:absolute;
@@ -257,3 +259,4 @@
 
 </body>
 </html>
+
