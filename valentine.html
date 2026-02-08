@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Be My Valentine 💖</title>
+
+  <style>
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont;
+      background: linear-gradient(135deg,#ffe4ec,#ffd1dc);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:20px;
+      overflow:hidden;
+    }
+
+    .card{
+      background:rgba(255,255,255,0.9);
+      border-radius:24px;
+      box-shadow:0 20px 50px rgba(0,0,0,0.15);
+      max-width:900px;
+      width:100%;
+      padding:24px;
+      position:relative;
+    }
+
+    h1{
+      font-size:clamp(28px,4vw,44px);
+      margin:0 0 8px;
+    }
+
+    .subtitle{
+      font-size:18px;
+      opacity:.85;
+      margin:0 0 16px;
+    }
+
+    .photo{
+      position:relative;
+      border-radius:18px;
+      overflow:hidden;
+      margin-bottom:18px;
+      box-shadow:0 16px 40px rgba(0,0,0,.12);
+    }
+
+    .photo img{
+      width:100%;
+      display:block;
+      object-fit:cover;
+    }
+
+    .caption{
+      position:absolute;
+      bottom:14px;
+      left:14px;
+      right:14px;
+      color:white;
+      font-weight:600;
+      text-shadow:0 6px 20px rgba(0,0,0,.5);
+      font-size:15px;
+    }
+
+    .arena{
+      position:relative;
+      height:220px;
+      border-radius:18px;
+      background:rgba(255,255,255,.7);
+      border:1px dashed rgba(0,0,0,.15);
+      overflow:hidden;
+    }
+
+    button{
+      border:none;
+      border-radius:999px;
+      padding:14px 22px;
+      font-size:16px;
+      font-weight:800;
+      cursor:pointer;
+      box-shadow:0 10px 25px rgba(0,0,0,.15);
+      transition: transform .08s ease;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    button:active{ transform: scale(.98); }
+
+    #yes{
+      background:linear-gradient(135deg,#22c55e,#16a34a);
+      color:white;
+      position:absolute;
+      left:18px;
+      bottom:18px;
+    }
+
+    #no{
+      background:linear-gradient(135deg,#fb7185,#ef4444);
+      color:white;
+      position:absolute;
+      right:18px;
+      bottom:18px;
+      transition: left .14s ease, top .14s ease, transform .14s ease;
+      touch-action:none;
+    }
+
+    .result{
+      display:none;
+      margin-top:18px;
+      padding:18px;
+      border-radius:18px;
+      background:rgba(255,255,255,.8);
+      border:1px solid rgba(0,0,0,.06);
+    }
+
+    .result h2{
+      margin:0 0 6px;
+      font-size:22px;
+    }
+
+    .result p{
+      margin:0;
+      font-size:16px;
+      line-height:1.5;
+    }
+
+    .heart{
+      position:absolute;
+      font-size:20px;
+      animation:float 6s linear infinite;
+      pointer-events:none;
+      filter: drop-shadow(0 6px 10px rgba(0,0,0,.15));
+    }
+
+    @keyframes float{
+      from{transform:translateY(40px);opacity:0}
+      15%{opacity:1}
+      to{transform:translateY(-400px);opacity:0}
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Background music -->
+  <audio id="bgMusic" autoplay loop playsinline preload="auto">
+    <source src="a-little-love.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="card">
+    <h1>Will you be my Valentine? 💌</h1>
+    <div class="subtitle">
+      In every lifetime, in every universe… I still find my way to you.
+    </div>
+
+    <div class="photo">
+      <img src="photo.jpg" alt="Us ❤️">
+      <div class="caption">
+        Us, somewhere between destiny and a very good decision 💫
+      </div>
+    </div>
+
+    <div class="arena" id="arena">
+      <button id="yes">YES 💖</button>
+      <button id="no">NO 💔</button>
+    </div>
+
+    <div class="result" id="result">
+      <h2>It was always you 💞</h2>
+      <p id="resultText"></p>
+    </div>
+  </div>
+
+<script>
+  const noBtn = document.getElementById("no");
+  const yesBtn = document.getElementById("yes");
+  const arena = document.getElementById("arena");
+  const result = document.getElementById("result");
+  const resultText = document.getElementById("resultText");
+  const music = document.getElementById("bgMusic");
+
+  // Set a soft volume (may only apply after playback starts)
+  music.volume = 0.45;
+
+  // Try to autoplay immediately on page load (works on many desktops)
+  async function tryAutoPlay() {
+    try {
+      await music.play();
+    } catch (e) {
+      // Autoplay blocked (common on phones). We'll start it on first user interaction below.
+    }
+  }
+  window.addEventListener("load", tryAutoPlay);
+
+  // Guaranteed start: first tap/click anywhere (so it still "feels" automatic)
+  function startMusicIfNeeded() {
+    if (music.paused) {
+      music.play().catch(()=>{});
+    }
+  }
+  document.addEventListener("pointerdown", startMusicIfNeeded, { once: true });
+  document.addEventListener("keydown", startMusicIfNeeded, { once: true });
+
+  const lines = [
+    "Congratulations 🎉 You are now officially my Valentine and forever favorite person.",
+    "Correct answer 💘 You’ve unlocked unlimited hugs, kisses, and my heart.",
+    "I knew it 😌 Destiny confirmed. Valentine’s date secured.",
+    "YES accepted 💖 I’ll choose you today, tomorrow, and every lifetime after."
+  ];
+
+  function moveNo(){
+    const rect = arena.getBoundingClientRect();
+    const maxX = rect.width - noBtn.offsetWidth - 10;
+    const maxY = rect.height - noBtn.offsetHeight - 10;
+
+    const x = Math.max(10, Math.random() * maxX);
+    const y = Math.max(10, Math.random() * maxY);
+
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+    noBtn.style.right = "auto";
+    noBtn.style.bottom = "auto";
+    noBtn.style.transform = `rotate(${Math.random()*20-10}deg)`;
+  }
+
+  // Run away when she tries
+  noBtn.addEventListener("mouseenter", moveNo);
+  noBtn.addEventListener("focus", moveNo);
+  noBtn.addEventListener("pointerdown", (e) => { e.preventDefault(); moveNo(); });
+  noBtn.addEventListener("click", (e) => { e.preventDefault(); moveNo(); });
+
+  yesBtn.addEventListener("click", () => {
+    startMusicIfNeeded();
+
+    arena.style.display = "none";
+    result.style.display = "block";
+    resultText.textContent = lines[Math.floor(Math.random()*lines.length)];
+
+    // Heart burst
+    for(let i=0;i<20;i++){
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.textContent = ["💖","💕","💘","❤️","💝"][Math.floor(Math.random()*5)];
+      h.style.left = Math.random()*window.innerWidth + "px";
+      h.style.bottom = (-30 - Math.random()*120) + "px";
+      h.style.animationDuration = (4 + Math.random()*4) + "s";
+      h.style.fontSize = (16 + Math.random()*18) + "px";
+      document.body.appendChild(h);
+      setTimeout(()=>h.remove(),8000);
+    }
+  });
+
+  // Optional: a tiny "tease" move shortly after load
+  window.addEventListener("load", () => setTimeout(moveNo, 650));
+</script>
+
+</body>
+</html>
