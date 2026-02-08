@@ -3,67 +3,341 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Be My Valentine 💖</title>
+  <title>💌 For Amy Tran</title>
 
   <style>
+    :root{
+      --bg1:#ffe4ec;
+      --bg2:#ffd1dc;
+      --card: rgba(255,255,255,0.92);
+      --shadow: 0 20px 55px rgba(0,0,0,0.16);
+      --red1:#ef4444;
+      --red2:#fb7185;
+      --pink:#ff4d8d;
+      --pink2:#ff8fb8;
+      --green1:#22c55e;
+      --green2:#16a34a;
+      --ink:#111827;
+      --softInk:#334155;
+    }
+
+    *{ box-sizing:border-box; }
     body{
       margin:0;
       min-height:100vh;
-      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont;
-      background: linear-gradient(135deg,#ffe4ec,#ffd1dc);
+      font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: radial-gradient(900px 650px at 20% 10%, var(--bg1), transparent 60%),
+                  radial-gradient(900px 650px at 80% 90%, var(--bg2), transparent 60%),
+                  linear-gradient(135deg,#fff0f5,#ffd1dc);
       display:flex;
-      justify-content:center;
       align-items:center;
-      padding:20px;
+      justify-content:center;
+      padding:18px;
+      overflow:hidden;
+      color:var(--ink);
+    }
+
+    /* ---------- global cute background layers ---------- */
+    .bgLayer{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:0;
+    }
+
+    /* Falling blossoms (emoji petals) */
+    .petal{
+      position:absolute;
+      top:-10vh;
+      font-size: 22px;
+      opacity: .85;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.12));
+      animation-name: fall, drift, spin;
+      animation-timing-function: linear, ease-in-out, ease-in-out;
+      animation-iteration-count: infinite, infinite, infinite;
+    }
+    @keyframes fall{ to { transform: translateY(120vh); } }
+    @keyframes drift{
+      0%,100% { margin-left: 0px; }
+      50% { margin-left: 60px; }
+    }
+    @keyframes spin{
+      0%,100% { rotate: -8deg; }
+      50% { rotate: 10deg; }
+    }
+
+    /* Sparkle pop (tiny twinkles) */
+    .sparkle{
+      position:absolute;
+      font-size: 18px;
+      opacity: 0;
+      animation: twinkle 2.8s ease-in-out infinite;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.10));
+    }
+    @keyframes twinkle{
+      0%{ transform: scale(.7); opacity:0; }
+      25%{ opacity:.9; }
+      55%{ transform: scale(1.05); opacity:.2; }
+      100%{ transform: scale(.7); opacity:0; }
+    }
+
+    /* ---------- INTRO (ENVELOPE) ---------- */
+    .introWrap{
+      width:min(820px, 96vw);
+      display:grid;
+      place-items:center;
+      gap:14px;
+      position:relative;
+      z-index:2;
+    }
+
+    .hint{
+      font-weight:900;
+      text-align:center;
+      line-height:1.25;
+      letter-spacing:-.02em;
+    }
+    .hint small{
+      display:block;
+      font-weight:750;
+      color: var(--softInk);
+      opacity:.78;
+      margin-top:6px;
+    }
+
+    .envelope{
+      width:min(700px, 92vw);
+      height:min(450px, 72vh);
+      position:relative;
+      border-radius:26px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      background: linear-gradient(135deg, rgba(255,255,255,.45), rgba(255,255,255,0));
+      border: 1px solid rgba(255,255,255,.55);
+      transform: translateZ(0);
+    }
+
+    .envBody{
+      position:absolute;
+      inset:16px;
+      border-radius:20px;
+      background: linear-gradient(135deg, #ff6b6b, #ef4444);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.24);
       overflow:hidden;
     }
 
-    .card{
-      background:rgba(255,255,255,0.9);
+    /* flaps */
+    .flapTop{
+      position:absolute;
+      left:0; right:0;
+      top:0;
+      height:58%;
+      background: linear-gradient(135deg, #ff9aa2, #ef4444);
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      transform-origin: top;
+      transition: transform 850ms cubic-bezier(.2,.9,.2,1);
+      z-index:6;
+      box-shadow: 0 12px 30px rgba(0,0,0,.18);
+    }
+    .flapLeft{
+      position:absolute; inset:0;
+      background: linear-gradient(135deg, #ff7a7a, #ef4444);
+      clip-path: polygon(0 0, 52% 52%, 0 100%);
+      opacity:.92;
+      z-index:3;
+    }
+    .flapRight{
+      position:absolute; inset:0;
+      background: linear-gradient(135deg, #ff7a7a, #ef4444);
+      clip-path: polygon(100% 0, 48% 52%, 100% 100%);
+      opacity:.92;
+      z-index:3;
+    }
+    .flapBottom{
+      position:absolute; inset:0;
+      background: linear-gradient(135deg, #ff5c5c, #e11d48);
+      clip-path: polygon(0 100%, 50% 52%, 100% 100%);
+      opacity:.96;
+      z-index:2;
+    }
+
+    /* cute label */
+    .toLabel{
+      position:absolute;
+      top:18px;
+      left:18px;
+      z-index:7;
+      background: rgba(255,255,255,.22);
+      border: 1px solid rgba(255,255,255,.25);
+      padding:10px 12px;
+      border-radius:14px;
+      backdrop-filter: blur(8px);
+      color: rgba(255,255,255,.95);
+      font-weight:900;
+      letter-spacing:-.02em;
+      box-shadow: 0 14px 30px rgba(0,0,0,.14);
+    }
+    .toLabel small{
+      display:block;
+      font-weight:800;
+      opacity:.9;
+      margin-top:2px;
+      letter-spacing:0;
+    }
+
+    /* heart seal button */
+    .seal{
+      position:absolute;
+      left:50%;
+      top:56%;
+      transform: translate(-50%, -50%);
+      z-index:8;
+      width:80px;
+      height:80px;
+      border-radius:999px;
+      border:none;
+      cursor:pointer;
+      background: radial-gradient(circle at 30% 30%, #fff, #ffe4ec 45%, #fecdd3 70%);
+      box-shadow: 0 20px 45px rgba(0,0,0,.22);
+      display:grid;
+      place-items:center;
+      transition: transform .12s ease, opacity .25s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .seal:active{ transform: translate(-50%, -50%) scale(.96); }
+    .seal span{
+      font-size:36px;
+      filter: drop-shadow(0 10px 16px rgba(0,0,0,.18));
+    }
+    .pulse{ animation: pulse 1.15s ease-in-out infinite; }
+    @keyframes pulse{
+      0%,100%{ transform: translate(-50%, -50%) scale(1); }
+      50%{ transform: translate(-50%, -50%) scale(1.08); }
+    }
+
+    /* letter */
+    .letter{
+      position:absolute;
+      left:26px; right:26px;
+      bottom:22px;
+      height:74%;
+      border-radius:18px;
+      background: rgba(255,255,255,.96);
+      box-shadow: 0 20px 55px rgba(0,0,0,.20);
+      z-index:5;
+      transform: translateY(30%);
+      transition: transform 900ms cubic-bezier(.2,.9,.2,1);
+      overflow:hidden;
+    }
+    .letterTop{
+      padding:18px 18px 8px;
+      font-weight:1000;
+      letter-spacing:-.02em;
+      font-size: clamp(18px, 2.6vw, 28px);
+    }
+    .letterSub{
+      padding:0 18px 16px;
+      opacity:.75;
+      font-weight:750;
+      font-size: clamp(12px, 1.7vw, 15px);
+      color: var(--softInk);
+    }
+    .letterLine{ height:1px; background: rgba(0,0,0,.08); margin:0 18px; }
+    .letterMsg{
+      padding:16px 18px;
+      font-weight:750;
+      opacity:.88;
+      line-height:1.45;
+      font-size: clamp(13px, 1.8vw, 16px);
+      color: #374151;
+    }
+    .miniSticker{
+      display:inline-block;
+      margin-top:10px;
+      padding:8px 10px;
+      border-radius:999px;
+      background: rgba(255,77,141,.12);
+      border: 1px solid rgba(255,77,141,.22);
+      font-weight:900;
+      color: #b4235a;
+    }
+
+    /* opened state */
+    .opened .flapTop{ transform: rotateX(180deg); }
+    .opened .letter{ transform: translateY(-8%); }
+    .opened .seal{ opacity:0; pointer-events:none; transform: translate(-50%, -50%) scale(.6); }
+
+    /* ---------- MAIN VALENTINE PAGE ---------- */
+    .main{
+      display:none;
+      width:min(940px, 96vw);
+      background: var(--card);
       border-radius:24px;
-      box-shadow:0 20px 50px rgba(0,0,0,0.15);
-      max-width:900px;
-      width:100%;
-      padding:24px;
+      box-shadow: var(--shadow);
+      padding:22px;
+      overflow:hidden;
       position:relative;
+      z-index:2;
+    }
+
+    .topRow{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
     }
 
     h1{
-      font-size:clamp(28px,4vw,44px);
-      margin:0 0 8px;
+      margin:0;
+      font-size: clamp(28px, 4vw, 44px);
+      letter-spacing:-.02em;
     }
 
     .subtitle{
-      font-size:18px;
+      margin:6px 0 16px;
+      font-size: 18px;
       opacity:.85;
-      margin:0 0 16px;
+      color: var(--softInk);
+      font-weight:700;
+    }
+
+    .badge{
+      padding:10px 12px;
+      border-radius:999px;
+      background: rgba(255,255,255,.7);
+      border: 1px solid rgba(0,0,0,.06);
+      font-weight:900;
+      box-shadow: 0 12px 26px rgba(0,0,0,.10);
     }
 
     .photo{
       position:relative;
       border-radius:18px;
       overflow:hidden;
-      margin-bottom:18px;
+      margin-bottom:16px;
       box-shadow:0 16px 40px rgba(0,0,0,.12);
+      background:#fff;
     }
-
     .photo img{
       width:100%;
-      max-height:65vh;   /* 👈 limits image height */
+      max-height:55vh;
       object-fit:contain;
       display:block;
+      background:#fff;
     }
-
-
     .caption{
       position:absolute;
       bottom:14px;
       left:14px;
       right:14px;
       color:white;
-      font-weight:600;
-      text-shadow:0 6px 20px rgba(0,0,0,.5);
+      font-weight:900;
+      text-shadow:0 6px 20px rgba(0,0,0,.55);
       font-size:15px;
+      pointer-events:none;
     }
 
     .arena{
@@ -75,22 +349,22 @@
       overflow:hidden;
     }
 
-    button{
+    button.action{
       border:none;
       border-radius:999px;
       padding:14px 22px;
       font-size:16px;
-      font-weight:800;
+      font-weight:1000;
       cursor:pointer;
       box-shadow:0 10px 25px rgba(0,0,0,.15);
       transition: transform .08s ease;
       user-select:none;
       -webkit-tap-highlight-color: transparent;
     }
-    button:active{ transform: scale(.98); }
+    button.action:active{ transform: scale(.98); }
 
     #yes{
-      background:linear-gradient(135deg,#22c55e,#16a34a);
+      background:linear-gradient(135deg,var(--green1),var(--green2));
       color:white;
       position:absolute;
       left:18px;
@@ -98,7 +372,7 @@
     }
 
     #no{
-      background:linear-gradient(135deg,#fb7185,#ef4444);
+      background:linear-gradient(135deg,var(--red2),var(--red1));
       color:white;
       position:absolute;
       right:18px;
@@ -107,115 +381,228 @@
       touch-action:none;
     }
 
+    .soundHint{
+      margin-top:10px;
+      font-weight:800;
+      opacity:.75;
+      font-size: 13px;
+      color: var(--softInk);
+    }
+
     .result{
       display:none;
-      margin-top:18px;
+      margin-top:16px;
       padding:18px;
       border-radius:18px;
-      background:rgba(255,255,255,.8);
+      background:rgba(255,255,255,.88);
       border:1px solid rgba(0,0,0,.06);
     }
+    .result h2{ margin:0 0 6px; font-size:22px; }
+    .result p{ margin:0; font-size:16px; line-height:1.5; font-weight:750; }
 
-    .result h2{
-      margin:0 0 6px;
-      font-size:22px;
-    }
-
-    .result p{
-      margin:0;
-      font-size:16px;
-      line-height:1.5;
-    }
-
+    /* heart burst */
     .heart{
       position:absolute;
       font-size:20px;
       animation:float 6s linear infinite;
       pointer-events:none;
       filter: drop-shadow(0 6px 10px rgba(0,0,0,.15));
+      z-index:5;
     }
-
     @keyframes float{
       from{transform:translateY(40px);opacity:0}
       15%{opacity:1}
-      to{transform:translateY(-400px);opacity:0}
+      to{transform:translateY(-420px);opacity:0}
+    }
+
+    /* Cute “glow” around cards */
+    .glow{
+      position:absolute;
+      inset:-60px;
+      background: radial-gradient(circle at 20% 10%, rgba(255,77,141,.16), transparent 45%),
+                  radial-gradient(circle at 80% 90%, rgba(34,197,94,.12), transparent 45%),
+                  radial-gradient(circle at 50% 50%, rgba(255,255,255,.20), transparent 50%);
+      pointer-events:none;
+      z-index:1;
     }
   </style>
 </head>
 
 <body>
+  <!-- Background layers -->
+  <div class="bgLayer" id="bgLayer"></div>
 
   <!-- Background music -->
   <audio id="bgMusic" autoplay loop playsinline preload="auto">
     <source src="a-little-love.mp3" type="audio/mpeg">
   </audio>
 
-  <div class="card">
-    <h1>Will you be my Valentine? 💌</h1>
-    <div class="subtitle">
-      In every lifetime, in every universe… I still find my way to you.
+  <!-- Envelope opening SFX (optional file) -->
+  <audio id="openSfx" preload="auto">
+    <source src="paper-open.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- INTRO / ENVELOPE -->
+  <section class="introWrap" id="intro">
+    <div class="hint">
+      A letter for <span style="color:var(--pink);">Amy Tran</span> 💌
+      <small>Tap the heart to open</small>
+    </div>
+
+    <div class="envelope" id="envelope">
+      <div class="envBody">
+        <div class="toLabel">
+          To: <strong>Amy Tran</strong>
+          <small>From: Your Valentine 😌</small>
+        </div>
+
+        <div class="flapTop"></div>
+        <div class="flapLeft"></div>
+        <div class="flapRight"></div>
+        <div class="flapBottom"></div>
+
+        <button class="seal pulse" id="openBtn" aria-label="Open the letter">
+          <span>💗</span>
+        </button>
+
+        <div class="letter" aria-hidden="true">
+          <div class="letterTop">Hi Amy Tran 💖</div>
+          <div class="letterSub">Okay… I need you to open this 😭</div>
+          <div class="letterLine"></div>
+          <div class="letterMsg">
+            There’s one question I’ve been meaning to ask you…
+            <br/><br/>
+            <span class="miniSticker">⚠️ “NO” is broken on purpose.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN PAGE -->
+  <main class="main" id="main">
+    <div class="glow"></div>
+
+    <div class="topRow">
+      <div>
+        <h1>Will you be my Valentine? 💌</h1>
+        <div class="subtitle">In every lifetime, in every universe… I still find my way to you.</div>
+      </div>
+      <div class="badge">For: Amy Tran 💞</div>
     </div>
 
     <div class="photo">
       <img src="photo.jpg" alt="Us ❤️">
-      <div class="caption">
-        Us, somewhere between destiny and a very good decision 💫
-      </div>
+      <div class="caption">Us, somewhere between destiny and a very good decision 💫</div>
     </div>
 
     <div class="arena" id="arena">
-      <button id="yes">YES 💖</button>
-      <button id="no">NO 💔</button>
+      <button class="action" id="yes">YES 💖</button>
+      <button class="action" id="no">NO 💔</button>
     </div>
 
-    <div class="result" id="result">
+    <div class="soundHint">If you don’t hear music yet, tap once anywhere 🎶</div>
+
+    <section class="result" id="result">
       <h2>It was always you 💞</h2>
       <p id="resultText"></p>
-    </div>
-  </div>
+    </section>
+  </main>
 
 <script>
-  const noBtn = document.getElementById("no");
-  const yesBtn = document.getElementById("yes");
-  const arena = document.getElementById("arena");
-  const result = document.getElementById("result");
-  const resultText = document.getElementById("resultText");
-  const music = document.getElementById("bgMusic");
+  const bgLayer = document.getElementById("bgLayer");
 
-  // Set a soft volume (may only apply after playback starts)
+  // --- Build cute background: petals + sparkles ---
+  function spawnPetals(n=18){
+    for(let i=0;i<n;i++){
+      const p = document.createElement("div");
+      p.className = "petal";
+      p.textContent = ["🌸","🌸","🌸","🌺"][Math.floor(Math.random()*4)];
+      p.style.left = (Math.random()*100) + "vw";
+      p.style.fontSize = (16 + Math.random()*16) + "px";
+      const fallDur = 8 + Math.random()*9;
+      const driftDur = 3 + Math.random()*4;
+      const spinDur = 2.5 + Math.random()*3.5;
+      p.style.animationDuration = `${fallDur}s, ${driftDur}s, ${spinDur}s`;
+      p.style.animationDelay = `${Math.random()*3}s, 0s, 0s`;
+      bgLayer.appendChild(p);
+    }
+  }
+
+  function spawnSparkles(n=14){
+    for(let i=0;i<n;i++){
+      const s = document.createElement("div");
+      s.className = "sparkle";
+      s.textContent = ["✨","✨","💫","⭐"][Math.floor(Math.random()*4)];
+      s.style.left = (Math.random()*100) + "vw";
+      s.style.top  = (Math.random()*100) + "vh";
+      s.style.animationDelay = (Math.random()*2.6) + "s";
+      s.style.fontSize = (14 + Math.random()*14) + "px";
+      bgLayer.appendChild(s);
+    }
+  }
+
+  spawnPetals(20);
+  spawnSparkles(16);
+
+  // --- Music + SFX setup ---
+  const music = document.getElementById("bgMusic");
+  const openSfx = document.getElementById("openSfx");
+
   music.volume = 0.45;
 
-  // Try to autoplay immediately on page load (works on many desktops)
-  async function tryAutoPlay() {
-    try {
-      await music.play();
-    } catch (e) {
-      // Autoplay blocked (common on phones). We'll start it on first user interaction below.
-    }
+  async function tryAutoPlay(){
+    try { await music.play(); } catch(e) {}
   }
   window.addEventListener("load", tryAutoPlay);
 
-  // Guaranteed start: first tap/click anywhere (so it still "feels" automatic)
-  function startMusicIfNeeded() {
-    if (music.paused) {
-      music.play().catch(()=>{});
-    }
+  function startMusicIfNeeded(){
+    if (music.paused) music.play().catch(()=>{});
   }
-  document.addEventListener("pointerdown", startMusicIfNeeded, { once: true });
-  document.addEventListener("keydown", startMusicIfNeeded, { once: true });
+  document.addEventListener("pointerdown", startMusicIfNeeded, { once:true });
+  document.addEventListener("keydown", startMusicIfNeeded, { once:true });
 
-  const lines = [
-    "Congratulations 🎉 You are now officially my Valentine and forever favorite person.",
-    "Correct answer 💘 You’ve unlocked unlimited hugs, kisses, and my heart.",
-    "I knew it 😌 Destiny confirmed. Valentine’s date secured.",
-    "YES accepted 💖 I’ll choose you today, tomorrow, and every lifetime after."
-  ];
+  function playOpenSfx(){
+    // If paper-open.mp3 isn't present, this will silently fail — that’s okay.
+    try{
+      openSfx.currentTime = 0;
+      openSfx.volume = 0.7;
+      openSfx.play().catch(()=>{});
+    } catch(e){}
+  }
+
+  // --- Envelope open -> reveal main ---
+  const intro = document.getElementById("intro");
+  const main  = document.getElementById("main");
+  const envelope = document.getElementById("envelope");
+  const openBtn = document.getElementById("openBtn");
+
+  openBtn.addEventListener("click", () => {
+    startMusicIfNeeded();
+    playOpenSfx();
+    envelope.classList.add("opened");
+
+    // extra sparkles burst on open
+    burstSparkles(16);
+
+    setTimeout(() => {
+      intro.style.display = "none";
+      main.style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 900);
+  });
+
+  // --- NO button runs away ---
+  const arena = document.getElementById("arena");
+  const noBtn = document.getElementById("no");
+  const yesBtn = document.getElementById("yes");
+  const result = document.getElementById("result");
+  const resultText = document.getElementById("resultText");
 
   function moveNo(){
     const rect = arena.getBoundingClientRect();
     const maxX = rect.width - noBtn.offsetWidth - 10;
     const maxY = rect.height - noBtn.offsetHeight - 10;
-
     const x = Math.max(10, Math.random() * maxX);
     const y = Math.max(10, Math.random() * maxY);
 
@@ -223,40 +610,60 @@
     noBtn.style.top = y + "px";
     noBtn.style.right = "auto";
     noBtn.style.bottom = "auto";
-    noBtn.style.transform = `rotate(${Math.random()*20-10}deg)`;
+    noBtn.style.transform = `rotate(${Math.random()*18-9}deg)`;
   }
 
-  // Run away when she tries
   noBtn.addEventListener("mouseenter", moveNo);
   noBtn.addEventListener("focus", moveNo);
-  noBtn.addEventListener("pointerdown", (e) => { e.preventDefault(); moveNo(); });
-  noBtn.addEventListener("click", (e) => { e.preventDefault(); moveNo(); });
+  noBtn.addEventListener("pointerdown", (e)=>{ e.preventDefault(); moveNo(); });
+  noBtn.addEventListener("click", (e)=>{ e.preventDefault(); moveNo(); });
 
-  yesBtn.addEventListener("click", () => {
-    startMusicIfNeeded();
+  // --- YES result + hearts + sparkles ---
+  const lines = [
+    "YES accepted 💖 Amy Tran… you’re my favorite person. Valentine’s date secured.",
+    "Correct answer detected ✅💘 You just unlocked unlimited hugs and kisses (non-refundable).",
+    "I knew it 😌 Destiny confirmed. It’s you, always you.",
+    "YAYYYYY 💞 I’ll choose you today, tomorrow, and every lifetime after."
+  ];
 
-    arena.style.display = "none";
-    result.style.display = "block";
-    resultText.textContent = lines[Math.floor(Math.random()*lines.length)];
-
-    // Heart burst
-    for(let i=0;i<20;i++){
+  function burstHearts(n=22){
+    for(let i=0;i<n;i++){
       const h = document.createElement("div");
       h.className = "heart";
       h.textContent = ["💖","💕","💘","❤️","💝"][Math.floor(Math.random()*5)];
-      h.style.left = Math.random()*window.innerWidth + "px";
+      h.style.left = (Math.random()*window.innerWidth) + "px";
       h.style.bottom = (-30 - Math.random()*120) + "px";
       h.style.animationDuration = (4 + Math.random()*4) + "s";
       h.style.fontSize = (16 + Math.random()*18) + "px";
       document.body.appendChild(h);
       setTimeout(()=>h.remove(),8000);
     }
-  });
+  }
 
-  // Optional: a tiny "tease" move shortly after load
-  window.addEventListener("load", () => setTimeout(moveNo, 650));
+  function burstSparkles(n=14){
+    for(let i=0;i<n;i++){
+      const s = document.createElement("div");
+      s.className = "heart"; // reuse float animation for burst
+      s.textContent = ["✨","💫","⭐","✨"][Math.floor(Math.random()*4)];
+      s.style.left = (Math.random()*window.innerWidth) + "px";
+      s.style.bottom = (-20 - Math.random()*80) + "px";
+      s.style.animationDuration = (3.2 + Math.random()*2.8) + "s";
+      s.style.fontSize = (16 + Math.random()*16) + "px";
+      document.body.appendChild(s);
+      setTimeout(()=>s.remove(),7000);
+    }
+  }
+
+  yesBtn.addEventListener("click", () => {
+    startMusicIfNeeded();
+    arena.style.display = "none";
+    result.style.display = "block";
+    resultText.textContent = lines[Math.floor(Math.random()*lines.length)];
+
+    burstHearts(22);
+    burstSparkles(16);
+  });
 </script>
 
 </body>
 </html>
-
