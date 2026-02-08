@@ -224,7 +224,7 @@
       height:74%;
       border-radius:18px;
       background: rgba(255,255,255,.96);
-      box-shadow: 0 20px 55px rgba(0,0,0,.20);
+      box-shadow: 0 20px 55px rgba(0,0,0,.20));
       z-index:5;
       transform: translateY(30%);
       transition: transform 900ms cubic-bezier(.2,.9,.2,1);
@@ -297,7 +297,7 @@
     }
 
     .subtitle{
-      margin:6px 0 16px;
+      margin:6px 0 12px;
       font-size: 18px;
       opacity:.85;
       color: var(--softInk);
@@ -317,7 +317,7 @@
       position:relative;
       border-radius:18px;
       overflow:hidden;
-      margin-bottom:16px;
+      margin-bottom:10px;
       box-shadow:0 16px 40px rgba(0,0,0,.12);
       background:#fff;
     }
@@ -328,8 +328,9 @@
       display:block;
       background:#fff;
     }
+
     .caption-below{
-      margin: 10px 4px 14px;
+      margin: 8px 4px 14px;
       font-weight: 900;
       font-size: 15px;
       color: #ec4899; /* cute pink */
@@ -344,6 +345,7 @@
       background:rgba(255,255,255,.7);
       border:1px dashed rgba(0,0,0,.15);
       overflow:hidden;
+      margin-top: 4px;
     }
 
     button.action{
@@ -360,12 +362,23 @@
     }
     button.action:active{ transform: scale(.98); }
 
+    @keyframes yesWiggle{
+      0%,100% { transform: translate(0,0) rotate(0deg); }
+      20% { transform: translate(1px,-1px) rotate(-0.6deg); }
+      40% { transform: translate(-1px,1px) rotate(0.6deg); }
+      60% { transform: translate(1px,1px) rotate(-0.4deg); }
+      80% { transform: translate(-1px,-1px) rotate(0.4deg); }
+    }
+
     #yes{
       background:linear-gradient(135deg,var(--green1),var(--green2));
       color:white;
       position:absolute;
       left:18px;
       bottom:18px;
+      will-change: transform, left, top;
+      transform-origin: center;
+      transition: left 0.6s ease, top 0.6s ease, transform 0.25s ease;
     }
 
     #no{
@@ -374,7 +387,7 @@
       position:absolute;
       right:18px;
       bottom:18px;
-      transition: left .14s ease, top .14s ease, transform .14s ease;
+      transition: left .14s ease, top .14s ease, transform .14s ease, opacity .18s ease;
       touch-action:none;
     }
 
@@ -450,7 +463,7 @@
       <div class="envBody">
         <div class="toLabel">
           To: <strong>Amy Tran</strong>
-          <small>From: Tam Le 😌</small>
+          <small>From: Your Valentine 😌</small>
         </div>
 
         <div class="flapTop"></div>
@@ -463,7 +476,7 @@
         </button>
 
         <div class="letter" aria-hidden="true">
-          <div class="letterTop">Hi Cục Nợ 💖</div>
+          <div class="letterTop">Hi Amy Tran 💖</div>
           <div class="letterSub">Okay… I need you to open this 😭</div>
           <div class="letterLine"></div>
           <div class="letterMsg">
@@ -491,11 +504,11 @@
     <div class="photo">
       <img src="photo.jpg" alt="Us ❤️">
     </div>
+
     <div class="caption-below">Us, somewhere between destiny and a very good decision 💫</div>
 
-
     <div class="arena" id="arena">
-      <button class="action" id="yes">YES 💖</button>
+      <button class="action" id="yes">YES (this is the right one) 💖</button>
       <button class="action" id="no">NO 💔</button>
     </div>
 
@@ -561,7 +574,6 @@
   document.addEventListener("keydown", startMusicIfNeeded, { once:true });
 
   function playOpenSfx(){
-    // If paper-open.mp3 isn't present, this will silently fail — that’s okay.
     try{
       openSfx.currentTime = 0;
       openSfx.volume = 0.7;
@@ -575,12 +587,25 @@
   const envelope = document.getElementById("envelope");
   const openBtn = document.getElementById("openBtn");
 
+  function burstSparkles(n=14){
+    for(let i=0;i<n;i++){
+      const s = document.createElement("div");
+      s.className = "heart"; // reuse float animation for burst
+      s.textContent = ["✨","💫","⭐","✨"][Math.floor(Math.random()*4)];
+      s.style.left = (Math.random()*window.innerWidth) + "px";
+      s.style.bottom = (-20 - Math.random()*80) + "px";
+      s.style.animationDuration = (3.2 + Math.random()*2.8) + "s";
+      s.style.fontSize = (16 + Math.random()*16) + "px";
+      document.body.appendChild(s);
+      setTimeout(()=>s.remove(),7000);
+    }
+  }
+
   openBtn.addEventListener("click", () => {
     startMusicIfNeeded();
     playOpenSfx();
     envelope.classList.add("opened");
 
-    // extra sparkles burst on open
     burstSparkles(16);
 
     setTimeout(() => {
@@ -590,17 +615,56 @@
     }, 900);
   });
 
-  // --- NO button runs away ---
+  // --- NO button runs away + YES grows/shakes/moves to center + NO disappears after 5 tries ---
   const arena = document.getElementById("arena");
   const noBtn = document.getElementById("no");
   const yesBtn = document.getElementById("yes");
   const result = document.getElementById("result");
   const resultText = document.getElementById("resultText");
 
+  let tries = 0;
+  let yesScale = 1;
+
+  function moveYesTowardCenter() {
+    const rect = arena.getBoundingClientRect();
+
+    const centerX = (rect.width - yesBtn.offsetWidth) / 2;
+    const centerY = (rect.height - yesBtn.offsetHeight) / 2;
+
+    const currentLeft = parseFloat(yesBtn.style.left || "18");
+    const currentTop  = parseFloat(
+      yesBtn.style.top || (rect.height - yesBtn.offsetHeight - 18)
+    );
+
+    const step = 0.18;
+    const newLeft = currentLeft + (centerX - currentLeft) * step;
+    const newTop  = currentTop  + (centerY - currentTop) * step;
+
+    yesBtn.style.left = newLeft + "px";
+    yesBtn.style.top  = newTop + "px";
+    yesBtn.style.bottom = "auto";
+  }
+
+  function addYesWiggle() {
+    yesBtn.style.animation = "none";
+    void yesBtn.offsetWidth; // reflow
+    yesBtn.style.animation = "yesWiggle 0.35s ease-in-out 0s 2";
+  }
+
+  function makeNoDisappear() {
+    noBtn.style.transform = "scale(0.2) rotate(20deg)";
+    noBtn.style.opacity = "0";
+    noBtn.style.pointerEvents = "none";
+    noBtn.textContent = "💨";
+  }
+
   function moveNo(){
+    tries++;
+
     const rect = arena.getBoundingClientRect();
     const maxX = rect.width - noBtn.offsetWidth - 10;
     const maxY = rect.height - noBtn.offsetHeight - 10;
+
     const x = Math.max(10, Math.random() * maxX);
     const y = Math.max(10, Math.random() * maxY);
 
@@ -609,6 +673,16 @@
     noBtn.style.right = "auto";
     noBtn.style.bottom = "auto";
     noBtn.style.transform = `rotate(${Math.random()*18-9}deg)`;
+
+    yesScale += 0.14;
+    yesBtn.style.transform = `scale(${yesScale})`;
+
+    addYesWiggle();
+    moveYesTowardCenter();
+
+    if (tries >= 5) {
+      makeNoDisappear();
+    }
   }
 
   noBtn.addEventListener("mouseenter", moveNo);
@@ -618,7 +692,7 @@
 
   // --- YES result + hearts + sparkles ---
   const lines = [
-    "YES accepted 💖 Amy Tran… you’re my favorite person. I LOVE YOU!💖",
+    "YES accepted 💖 Amy Tran… you’re my favorite person. Valentine’s date secured.",
     "Correct answer detected ✅💘 You just unlocked unlimited hugs and kisses (non-refundable).",
     "I knew it 😌 Destiny confirmed. It’s you, always you.",
     "YAYYYYY 💞 I’ll choose you today, tomorrow, and every lifetime after."
@@ -638,20 +712,6 @@
     }
   }
 
-  function burstSparkles(n=14){
-    for(let i=0;i<n;i++){
-      const s = document.createElement("div");
-      s.className = "heart"; // reuse float animation for burst
-      s.textContent = ["✨","💫","⭐","✨"][Math.floor(Math.random()*4)];
-      s.style.left = (Math.random()*window.innerWidth) + "px";
-      s.style.bottom = (-20 - Math.random()*80) + "px";
-      s.style.animationDuration = (3.2 + Math.random()*2.8) + "s";
-      s.style.fontSize = (16 + Math.random()*16) + "px";
-      document.body.appendChild(s);
-      setTimeout(()=>s.remove(),7000);
-    }
-  }
-
   yesBtn.addEventListener("click", () => {
     startMusicIfNeeded();
     arena.style.display = "none";
@@ -665,5 +725,3 @@
 
 </body>
 </html>
-
-
